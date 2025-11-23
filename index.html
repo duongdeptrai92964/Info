@@ -1226,19 +1226,31 @@
     </div>
 
     <script>
-        // Timer functionality - synchronized across all devices
+        // Timer functionality - synchronized across all devices using WorldTimeAPI
         // This timestamp is the start time for the timer (same for all users)
-        // This ensures all devices show the same elapsed time
-        // Change this to your desired start time (in milliseconds since epoch)
-        // Current time: 1763894931301 (Nov 23, 2025 10:48:51 UTC)
-        // Set this to when you want the timer to start
-        const GLOBAL_START_TIME = 1763894931301; // Fixed start time - same for all users (set to current time)
-        
+        const GLOBAL_START_TIME = 1763894931301; // Fixed start time - same for all users
         let timerInterval = null;
+        let serverTimeOffset = 0; // Offset between server time and client time
+        
+        // Get server time from WorldTimeAPI to ensure synchronization
+        async function getServerTime() {
+            try {
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh');
+                const data = await response.json();
+                const serverTime = new Date(data.datetime).getTime();
+                const clientTime = Date.now();
+                serverTimeOffset = serverTime - clientTime;
+                return serverTime;
+            } catch (error) {
+                console.warn('Failed to fetch server time, using client time:', error);
+                return Date.now();
+            }
+        }
         
         function updateTimer() {
             try {
-                const currentTime = Date.now();
+                // Use server time if available, otherwise use client time
+                const currentTime = Date.now() + serverTimeOffset;
                 const elapsed = currentTime - GLOBAL_START_TIME;
                 
                 // Prevent negative time
@@ -1248,11 +1260,19 @@
                 }
                 
                 const seconds = Math.floor(elapsed / 1000);
-                const hours = Math.floor(seconds / 3600);
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor((seconds % 86400) / 3600);
                 const minutes = Math.floor((seconds % 3600) / 60);
                 const secs = seconds % 60;
                 
-                const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
+                // Format: "X ngày HH:MM:SS đã trôi qua"
+                let formatted;
+                if (days > 0) {
+                    formatted = `${days} ngày ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
+                } else {
+                    formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
+                }
+                
                 const timerElement = document.getElementById('timer');
                 if (timerElement) {
                     timerElement.textContent = formatted;
@@ -1262,20 +1282,22 @@
             }
         }
         
-        // Start timer immediately when page loads
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                updateTimer();
-                if (!timerInterval) {
-                    timerInterval = setInterval(updateTimer, 1000);
-                }
-            });
-        } else {
+        // Initialize timer with server time
+        async function initTimer() {
+            await getServerTime();
             updateTimer();
             if (!timerInterval) {
                 timerInterval = setInterval(updateTimer, 1000);
             }
+            // Sync with server every 5 minutes
+            setInterval(getServerTime, 5 * 60 * 1000);
+        }
+        
+        // Start timer when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTimer);
+        } else {
+            initTimer();
         }
 
         // Loading overlay click handler
