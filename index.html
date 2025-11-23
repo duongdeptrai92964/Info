@@ -1230,27 +1230,53 @@
         // This timestamp is the start time for the timer (same for all users)
         // This ensures all devices show the same elapsed time
         // Change this to your desired start time (in milliseconds since epoch)
-        // Current timestamp: 1732348800000 (adjust as needed)
-        const GLOBAL_START_TIME = 1732348800000; // Fixed start time - same for all users
+        // Current time: 1763894931301 (Nov 23, 2025 10:48:51 UTC)
+        // Set this to when you want the timer to start
+        const GLOBAL_START_TIME = 1763894931301; // Fixed start time - same for all users (set to current time)
+        
+        let timerInterval = null;
         
         function updateTimer() {
-            const currentTime = Date.now();
-            const elapsed = currentTime - GLOBAL_START_TIME;
-            const seconds = Math.floor(elapsed / 1000);
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = seconds % 60;
-            
-            const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
-            const timerElement = document.getElementById('timer');
-            if (timerElement) {
-                timerElement.textContent = formatted;
+            try {
+                const currentTime = Date.now();
+                const elapsed = currentTime - GLOBAL_START_TIME;
+                
+                // Prevent negative time
+                if (elapsed < 0) {
+                    console.error('Timer start time is in the future');
+                    return;
+                }
+                
+                const seconds = Math.floor(elapsed / 1000);
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.textContent = formatted;
+                }
+            } catch (error) {
+                console.error('Error updating timer:', error);
             }
         }
         
         // Start timer immediately when page loads
-        updateTimer();
-        setInterval(updateTimer, 1000);
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                updateTimer();
+                if (!timerInterval) {
+                    timerInterval = setInterval(updateTimer, 1000);
+                }
+            });
+        } else {
+            updateTimer();
+            if (!timerInterval) {
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+        }
 
         // Loading overlay click handler
         const loadingOverlay = document.getElementById('loadingOverlay');
