@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Minh Dương</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.25;
+            transition: opacity 0.8s ease;
+        }
+
+        .video-background.visible {
+            opacity: 0.3;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.75) 0%, rgba(26, 26, 46, 0.65) 50%, rgba(10, 10, 10, 0.75) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .video-background {
+                opacity: 0.2;
+            }
+            
+            .video-background.visible {
+                opacity: 0.25;
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: backgroundFloat 20s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(102, 126, 234, 0.4), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(1px 1px at 80% 10%, rgba(118, 75, 162, 0.3), transparent),
+                radial-gradient(2px 2px at 90% 60%, rgba(102, 126, 234, 0.3), transparent),
+                radial-gradient(1px 1px at 33% 80%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 10% 50%, rgba(118, 75, 162, 0.3), transparent);
+            background-size: 200% 200%;
+            background-position: 0% 0%, 100% 0%, 50% 50%, 0% 100%, 100% 100%, 50% 0%, 0% 50%;
+            animation: starsMove 30s linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundFloat {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            33% { 
+                transform: translate(50px, -30px) scale(1.1);
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translate(-30px, 50px) scale(0.9);
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes starsMove {
+            0% { background-position: 0% 0%, 100% 0%, 50% 50%, 0% 100%, 100% 100%, 50% 0%, 0% 50%; }
+            100% { background-position: 100% 100%, 0% 100%, 50% 50%, 100% 0%, 0% 0%, 50% 100%, 100% 50%; }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            overflow: hidden;
+        }
+
+        .loading-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .loading-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(3px 3px at 25% 35%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(2px 2px at 75% 75%, rgba(102, 126, 234, 0.6), transparent),
+                radial-gradient(1px 1px at 45% 25%, rgba(255, 255, 255, 0.7), transparent),
+                radial-gradient(2px 2px at 85% 15%, rgba(118, 75, 162, 0.5), transparent),
+                radial-gradient(3px 3px at 15% 65%, rgba(102, 126, 234, 0.5), transparent),
+                radial-gradient(1px 1px at 55% 85%, rgba(255, 255, 255, 0.6), transparent),
+                radial-gradient(2px 2px at 95% 45%, rgba(118, 75, 162, 0.4), transparent),
+                radial-gradient(1px 1px at 35% 95%, rgba(102, 126, 234, 0.5), transparent);
+            background-size: 200% 200%;
+            background-position: 0% 0%, 100% 0%, 50% 50%, 0% 100%, 100% 100%, 50% 0%, 0% 50%, 100% 50%;
+            animation: loadingStarsMove 25s linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes loadingStarsMove {
+            0% { 
+                background-position: 0% 0%, 100% 0%, 50% 50%, 0% 100%, 100% 100%, 50% 0%, 0% 50%, 100% 50%;
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% { 
+                background-position: 100% 100%, 0% 100%, 50% 50%, 100% 0%, 0% 0%, 50% 100%, 100% 50%, 0% 50%;
+                transform: scale(1);
+            }
+        }
+
+        /* Particles for loading overlay */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle-1 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+            top: 10%;
+            left: 10%;
+            animation: particleFloat1 20s ease-in-out infinite;
+        }
+
+        .particle-2 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.3) 0%, transparent 70%);
+            top: 60%;
+            right: 15%;
+            animation: particleFloat2 25s ease-in-out infinite;
+        }
+
+        .particle-3 {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.25) 0%, transparent 70%);
+            bottom: 20%;
+            left: 20%;
+            animation: particleFloat3 22s ease-in-out infinite;
+        }
+
+        .particle-4 {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.25) 0%, transparent 70%);
+            top: 30%;
+            right: 30%;
+            animation: particleFloat4 18s ease-in-out infinite;
+        }
+
+        .particle-5 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+            bottom: 40%;
+            right: 10%;
+            animation: particleFloat5 24s ease-in-out infinite;
+        }
+
+        .particle-6 {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.2) 0%, transparent 70%);
+            top: 50%;
+            left: 5%;
+            animation: particleFloat6 21s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            33% { transform: translate(100px, -50px) scale(1.2); opacity: 0.8; }
+            66% { transform: translate(-50px, 100px) scale(0.8); opacity: 0.5; }
+        }
+
+        @keyframes particleFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            33% { transform: translate(-80px, 80px) scale(1.1); opacity: 0.7; }
+            66% { transform: translate(60px, -60px) scale(0.9); opacity: 0.6; }
+        }
+
+        @keyframes particleFloat3 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            50% { transform: translate(120px, -80px) scale(1.3); opacity: 0.8; }
+        }
+
+        @keyframes particleFloat4 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: translate(-100px, 100px) scale(1.2) rotate(180deg); opacity: 0.7; }
+        }
+
+        @keyframes particleFloat5 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            33% { transform: translate(70px, 70px) scale(1.1); opacity: 0.6; }
+            66% { transform: translate(-70px, -70px) scale(0.9); opacity: 0.5; }
+        }
+
+        @keyframes particleFloat6 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.5; }
+            50% { transform: translate(90px, -90px) scale(1.15) rotate(360deg); opacity: 0.7; }
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .loading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 700px;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-name {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            animation: textGlow 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            position: relative;
+        }
+
+        .loading-name::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            animation: underlineGlow 2s ease-in-out infinite;
+        }
+
+        .loading-percent {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            animation: textGlow 3s ease-in-out infinite 0.5s;
+            position: relative;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { 
+                filter: brightness(1);
+                transform: scale(1);
+            }
+            50% { 
+                filter: brightness(1.3);
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes underlineGlow {
+            0%, 100% { opacity: 0.5; transform: scaleX(0.8); }
+            50% { opacity: 1; transform: scaleX(1); }
+        }
+
+        .loading-warning {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 2rem 0;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border: 2px solid rgba(255, 107, 107, 0.5);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulseWarning 2s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 20px rgba(255, 107, 107, 0.3),
+                inset 0 0 20px rgba(255, 107, 107, 0.1);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 1px;
+        }
+
+        .loading-warning::before {
+            content: '⚠';
+            margin-right: 10px;
+            animation: rotateWarning 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .loading-warning::after {
+            content: '⚠';
+            margin-left: 10px;
+            animation: rotateWarning 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .loading-warning:hover {
+            transform: scale(1.08) translateY(-3px);
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.3) 0%, rgba(255, 107, 107, 0.2) 100%);
+            border-color: rgba(255, 107, 107, 0.8);
+            box-shadow: 
+                0 0 30px rgba(255, 107, 107, 0.5),
+                inset 0 0 30px rgba(255, 107, 107, 0.2);
+        }
+
+        .loading-warning:active {
+            transform: scale(1.05) translateY(-1px);
+        }
+
+        @keyframes pulseWarning {
+            0%, 100% { 
+                opacity: 1;
+                box-shadow: 
+                    0 0 20px rgba(255, 107, 107, 0.3),
+                    inset 0 0 20px rgba(255, 107, 107, 0.1);
+            }
+            50% { 
+                opacity: 0.9;
+                box-shadow: 
+                    0 0 30px rgba(255, 107, 107, 0.5),
+                    inset 0 0 30px rgba(255, 107, 107, 0.2);
+            }
+        }
+
+        @keyframes rotateWarning {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-10deg) scale(1.1); }
+            75% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container.visible {
+            opacity: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 70% 60%, rgba(118, 75, 162, 0.08) 0%, transparent 60%);
+            animation: containerGlow 15s ease-in-out infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes containerGlow {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.5;
+            }
+            50% { 
+                transform: translate(30px, -20px) scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        /* Background particles for main container */
+        .bg-particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .bg-particle-1 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+            top: 5%;
+            left: 5%;
+            animation: bgParticleFloat1 30s ease-in-out infinite;
+        }
+
+        .bg-particle-2 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.2) 0%, transparent 70%);
+            bottom: 10%;
+            right: 8%;
+            animation: bgParticleFloat2 35s ease-in-out infinite;
+        }
+
+        .bg-particle-3 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+            top: 50%;
+            left: 2%;
+            animation: bgParticleFloat3 28s ease-in-out infinite;
+        }
+
+        .bg-particle-4 {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.15) 0%, transparent 70%);
+            top: 20%;
+            right: 5%;
+            animation: bgParticleFloat4 32s ease-in-out infinite;
+        }
+
+        @keyframes bgParticleFloat1 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            33% { transform: translate(150px, -100px) scale(1.3); opacity: 0.5; }
+            66% { transform: translate(-100px, 150px) scale(0.7); opacity: 0.4; }
+        }
+
+        @keyframes bgParticleFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(-120px, 120px) scale(1.2); opacity: 0.5; }
+        }
+
+        @keyframes bgParticleFloat3 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.25; }
+            50% { transform: translate(100px, -80px) scale(1.4) rotate(180deg); opacity: 0.45; }
+        }
+
+        @keyframes bgParticleFloat4 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            33% { transform: translate(-80px, -80px) scale(1.1); opacity: 0.5; }
+            66% { transform: translate(80px, 80px) scale(0.9); opacity: 0.4; }
+        }
+
+        /* Profile Header */
+        .profile-header {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            overflow: visible;
+            position: relative;
+            aspect-ratio: 1 / 1;
+            padding: 0;
+        }
+
+        .avatar::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            background-image: url('./frame.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 50%;
+            display: block;
+            aspect-ratio: 1 / 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar::before {
+            content: '👤';
+            position: absolute;
+            font-size: 4rem;
+            display: none;
+        }
+
+        .avatar img[src=""],
+        .avatar img:not([src]) {
+            display: none;
+        }
+
+        .profile-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-tagline {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 2rem;
+        }
+
+        .profile-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .discord-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #5865F2;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #2d2d2d;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .timer {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 1rem;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .social-link {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 1 / 1;
+            flex-shrink: 0;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .social-link svg {
+            width: 28px;
+            height: 28px;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .social-link.facebook {
+            background: linear-gradient(135deg, #1877f2 0%, #0d5dbf 100%);
+            color: white;
+        }
+
+        .social-link.discord {
+            background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+            color: white;
+        }
+
+        /* Skills Section */
+        .skills-section {
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .skills-list {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .skill-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: transform 0.3s;
+        }
+
+        .skill-badge:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Expertise Section */
+        .expertise-section {
+            margin: 4rem 0;
+        }
+
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .expertise-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid #2d2d2d;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .expertise-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .expertise-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .expertise-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .expertise-card p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Projects Section */
+        .projects-section {
+            margin: 4rem 0;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: #1a1a1a;
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid #2d2d2d;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+
+        .project-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .project-card p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* Collaboration Section */
+        .collaboration-section {
+            text-align: center;
+            margin: 4rem 0;
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .collaboration-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .collaboration-section p {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 2rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            border-top: 1px solid #2d2d2d;
+            margin-top: 4rem;
+        }
+
+        /* Audio Player */
+        .audio-player-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .audio-player-container.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .audio-control-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: #5865F2;
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: transform 0.2s, background 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .audio-control-btn:hover {
+            transform: scale(1.05);
+            background: #4752C4;
+        }
+
+        .audio-control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .audio-control-btn.pause {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .audio-control-btn.pause::before,
+        .audio-control-btn.pause::after {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: white;
+            border-radius: 1px;
+            display: block;
+        }
+
+        .audio-time {
+            font-size: 0.85rem;
+            color: #fff;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            min-width: 80px;
+        }
+
+        .audio-volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .audio-volume-icon {
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .audio-volume-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .audio-volume-slider {
+            width: 80px;
+            height: 4px;
+            background: #2d2d2d;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-volume-bar {
+            height: 100%;
+            background: #5865F2;
+            border-radius: 2px;
+            width: 70%;
+            transition: width 0.1s;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #audioPlayer {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .audio-player-container {
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                min-width: auto;
+                max-width: none;
+                padding: 8px 12px;
+            }
+
+            .audio-time {
+                font-size: 0.75rem;
+                min-width: 70px;
+            }
+
+            .audio-volume-slider {
+                width: 60px;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 2rem;
+            }
+
+            .loading-name,
+            .loading-percent {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+
+            .loading-header {
+                max-width: 90%;
+                margin-bottom: 2rem;
+            }
+
+            .loading-warning {
+                font-size: 1rem;
+                padding: 14px 30px;
+                margin: 1.5rem 0;
+            }
+
+            .expertise-grid,
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video class="video-background" id="videoBackground" autoplay muted loop playsinline>
+        <source src="./e655783aca559bffaac56fe509b78b67_t1.mp4" type="video/mp4">
+        Trình duyệt của bạn không hỗ trợ video.
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+        <div class="particle particle-6"></div>
+        <div class="loading-header">
+            <div class="loading-name">minhduong</div>
+            <div class="loading-percent" id="loadingPercent">100%</div>
+        </div>
+        <div class="loading-warning" id="clickWarning">CLICK ĐỂ TIẾP TỤC</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer">
+        <div class="bg-particle bg-particle-1"></div>
+        <div class="bg-particle bg-particle-2"></div>
+        <div class="bg-particle bg-particle-3"></div>
+        <div class="bg-particle bg-particle-4"></div>
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="avatar">
+                <img src="./%E2%98%86.jpg" alt="Avatar" onerror="this.style.display='none'; this.parentElement.innerHTML='👤';">
+            </div>
+            <h1 class="profile-name">Minh Dương</h1>
+            <p class="profile-tagline">✨ Vibe Code làm vì đam mê ✨</p>
+            
+            <div class="profile-info">
+                <div class="discord-info">
+                    <span>💬</span>
+                    <span>discord: domainexpansion2</span>
+                </div>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    <span>Đang hoạt động</span>
+                </div>
+            </div>
+            
+            <div class="status">
+                <span>💻 Đang code linh tinh</span>
+            </div>
+            
+            <div class="timer" id="timer">00:00:00 đã trôi qua</div>
+            
+            <!-- Social Links -->
+            <div class="social-links">
+                <a href="https://www.facebook.com/profile.php?id=61580907689682" target="_blank" class="social-link facebook" title="Facebook">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                </a>
+                <a href="https://discord.gg/KgMDm6RG" target="_blank" class="social-link discord" title="Tham gia Discord Server">
+                    <svg width="24" height="24" viewBox="0 0 71 55" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 49.0718 48.5383C50.1157 50.6034 51.333 52.5699 52.6986 54.435C52.7574 54.5139 52.8553 54.5477 52.9477 54.5195C58.7211 52.7249 64.6037 50.0174 70.6766 45.5576C70.727 45.5182 70.7634 45.459 70.769 45.3942C72.2807 30.0791 68.7487 16.7757 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="skills-section">
+            <h2 class="section-title">### 💻 Kỹ Năng Lập Trình</h2>
+            <div class="skills-list">
+                <div class="skill-badge">Python</div>
+                <div class="skill-badge">HTML</div>
+                <div class="skill-badge">JavaScript</div>
+                <div class="skill-badge">CSS</div>
+            </div>
+        </div>
+
+        <!-- Expertise Section -->
+        <div class="expertise-section">
+            <h2 class="section-title">## Chuyên Môn & Kỹ Năng</h2>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <div class="expertise-icon">🚀</div>
+                    <h3>Full-Stack Development</h3>
+                    <p>Xây dựng ứng dụng web hoàn chỉnh từ front-end đến back-end với kiến trúc hiện đại và hiệu suất tối ưu.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">🎨</div>
+                    <h3>UI/UX Design</h3>
+                    <p>Thiết kế giao diện người dùng đẹp mắt, trực quan với trải nghiệm mượt mà và hiệu ứng tuyệt đẹp.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">⚡</div>
+                    <h3>Performance Optimization</h3>
+                    <p>Tối ưu hóa tốc độ và hiệu suất ứng dụng, mang đến trải nghiệm siêu nhanh cho người dùng.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">🔧</div>
+                    <h3>Problem Solving</h3>
+                    <p>Giải quyết mọi thách thức kỹ thuật với tư duy logic và phương pháp tiếp cận sáng tạo.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">📱</div>
+                    <h3>Responsive Design</h3>
+                    <p>Phát triển giao diện hoàn hảo trên mọi thiết bị từ mobile đến desktop với UX nhất quán.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">💡</div>
+                    <h3>Innovation & Creativity</h3>
+                    <p>Luôn cập nhật công nghệ mới nhất và áp dụng giải pháp đột phá vào từng dự án.</p>
+                </div>
+                <div class="expertise-card">
+                    <div class="expertise-icon">🤖</div>
+                    <h3>AI-Powered Development</h3>
+                    <p>Code 0%, Kỹ năng dùng AI 100%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="projects-section">
+            <h2 class="section-title">## 🎯 Dự Án Nổi Bật</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-icon">🌐</div>
+                    <h3>Website tạo câu hỏi về bản thân</h3>
+                    <p>Có thể tạo câu hỏi về bản thân, có thể chọn số lượng câu hỏi, có thể chọn số lượng câu trả lời, có thể chọn câu hỏi dạng nhập văn bản để bạn bè cảm thấy như thế nào về mình</p>
+                </div>
+                <div class="project-card">
+                    <div class="project-icon">🤖</div>
+                    <h3>Discord Bot Đa Năng</h3>
+                    <p>Xây dựng bot Discord với nhiều tính năng như quản lý server, mini games, music player, và moderation tools. Tích hợp AI để chatbot thông minh, sử dụng Python với thư viện discord.py và database MongoDB.</p>
+                </div>
+                <div class="project-card">
+                    <div class="project-icon">📊</div>
+                    <h3>Phần mềm tạo tài khoản</h3>
+                    <p>Giúp tạo 1 số lượng tài khoản instagram với số lượng lớn mà bạn mong muốn Multi-platform - Hỗ trợ Instagram, TikTok, Facebook, Liên Quân, Hotmail</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collaboration Section -->
+        <div class="collaboration-section">
+            <h2>### 💫 Sẵn Sàng Hợp Tác</h2>
+            <p>Đang tìm kiếm một developer tài năng cho dự án của bạn?<br>Hãy liên hệ và cùng nhau tạo nên điều tuyệt vời!</p>
+            <a href="#" class="contact-btn">Liên hệ ngay</a>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>© 2025 MinhDương. All rights reserved. Mõm hết trừ kỹ năng cuối cùng</p>
+        </footer>
+    </div>
+
+    <!-- Audio Player -->
+    <audio id="audioPlayer" loop preload="auto">
+        <source src="./Final.mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phát audio.
+    </audio>
+
+    <div class="audio-player-container" id="audioPlayerContainer">
+        <button class="audio-control-btn" id="playPauseBtn">▶</button>
+        <div class="audio-time" id="audioTime">00:00 / 00:00</div>
+        <div class="audio-volume-container">
+            <div class="audio-volume-icon" id="volumeIcon">🔊</div>
+            <div class="audio-volume-slider" id="volumeSlider">
+                <div class="audio-volume-bar" id="volumeBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer functionality
+        let startTime = Date.now();
+        
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
+            document.getElementById('timer').textContent = formatted;
+        }
+
+        // Loading overlay click handler
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContainer = document.getElementById('mainContainer');
+        const clickWarning = document.getElementById('clickWarning');
+
+        // Video background
+        const videoBackground = document.getElementById('videoBackground');
+        
+        // Show video immediately
+        videoBackground.classList.add('visible');
+        
+        // Ensure video plays
+        videoBackground.addEventListener('loadeddata', () => {
+            videoBackground.play().catch(err => {
+                console.log('Video autoplay prevented:', err);
+            });
+        });
+
+        // Try to play video on any user interaction
+        const playVideoOnInteraction = () => {
+            if (videoBackground.paused) {
+                videoBackground.play().catch(err => {
+                    console.log('Video play prevented:', err);
+                });
+            }
+        };
+
+        document.addEventListener('click', playVideoOnInteraction, { once: true });
+        document.addEventListener('touchstart', playVideoOnInteraction, { once: true });
+        document.addEventListener('keydown', playVideoOnInteraction, { once: true });
+
+        clickWarning.addEventListener('click', () => {
+            loadingOverlay.classList.add('hidden');
+            mainContainer.classList.add('visible');
+            videoBackground.classList.add('visible');
+            startTime = Date.now();
+            setInterval(updateTimer, 1000);
+            
+            // Ensure video plays after loading overlay is hidden
+            playVideoOnInteraction();
+        });
+
+        // Animate on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe cards
+        document.querySelectorAll('.expertise-card, .project-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+
+        // Smooth scroll for contact button
+        document.querySelector('.contact-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Liên hệ qua Discord: domainexpansion2');
+        });
+
+        // Audio Player functionality
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const audioTime = document.getElementById('audioTime');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeBar = document.getElementById('volumeBar');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+
+        let isPlaying = false;
+        let volume = 0.7;
+        let isDraggingVolume = false;
+
+        // Format time
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Update audio time display
+        function updateTime() {
+            const current = audioPlayer.currentTime;
+            const duration = audioPlayer.duration || 0;
+            audioTime.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+        }
+
+        // Update volume display
+        function updateVolumeDisplay() {
+            volumeBar.style.width = `${volume * 100}%`;
+            
+            // Update volume icon
+            if (volume === 0) {
+                volumeIcon.textContent = '🔇';
+            } else if (volume < 0.5) {
+                volumeIcon.textContent = '🔉';
+            } else {
+                volumeIcon.textContent = '🔊';
+            }
+        }
+
+        // Set volume
+        function setVolume(value) {
+            volume = Math.max(0, Math.min(1, value));
+            audioPlayer.volume = volume;
+            updateVolumeDisplay();
+        }
+
+        // Update play/pause button appearance
+        function updatePlayPauseButton() {
+            if (isPlaying) {
+                playPauseBtn.classList.add('pause');
+                playPauseBtn.textContent = '';
+            } else {
+                playPauseBtn.classList.remove('pause');
+                playPauseBtn.textContent = '▶';
+            }
+        }
+
+        // Play audio function
+        function playAudio() {
+            if (!isPlaying && audioPlayer.readyState >= 2) {
+                audioPlayer.play().then(() => {
+                    isPlaying = true;
+                    updatePlayPauseButton();
+                }).catch(err => {
+                    console.log('Auto-play prevented:', err);
+                });
+            } else if (!isPlaying) {
+                // If audio not loaded yet, wait for it
+                audioPlayer.addEventListener('canplay', function playWhenReady() {
+                    audioPlayer.removeEventListener('canplay', playWhenReady);
+                    if (!isPlaying) {
+                        audioPlayer.play().then(() => {
+                            isPlaying = true;
+                            updatePlayPauseButton();
+                        }).catch(err => {
+                            console.log('Auto-play prevented:', err);
+                        });
+                    }
+                }, { once: true });
+            }
+        }
+
+        // Play/Pause toggle
+        playPauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                audioPlayer.pause();
+            } else {
+                playAudio();
+            }
+        });
+
+        // Update time on time update
+        audioPlayer.addEventListener('timeupdate', updateTime);
+
+        // Update playing state when audio actually plays
+        audioPlayer.addEventListener('play', () => {
+            isPlaying = true;
+            updatePlayPauseButton();
+        });
+
+        // Update playing state when audio pauses
+        audioPlayer.addEventListener('pause', () => {
+            isPlaying = false;
+            updatePlayPauseButton();
+        });
+
+        // Volume control with drag support (horizontal slider)
+        function handleVolumeChange(e) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            setVolume(percent);
+        }
+
+        volumeSlider.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleVolumeChange(e);
+        });
+        volumeSlider.addEventListener('mousedown', (e) => {
+            e.stopPropagation();
+            isDraggingVolume = true;
+            handleVolumeChange(e);
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDraggingVolume) {
+                handleVolumeChange(e);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDraggingVolume = false;
+        });
+
+        // Toggle mute on volume icon click
+        let previousVolume = volume;
+        volumeIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (volume > 0) {
+                previousVolume = volume;
+                setVolume(0);
+            } else {
+                setVolume(previousVolume || 0.7);
+            }
+        });
+
+        // Initialize volume and button
+        setVolume(volume);
+        updatePlayPauseButton();
+
+        // Show audio player when page loads
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            updateTime();
+        });
+
+        // Show audio player container when main container is visible
+        clickWarning.addEventListener('click', () => {
+            setTimeout(() => {
+                audioPlayerContainer.classList.add('visible');
+            }, 500);
+        });
+
+        // Handle audio ended (for loop)
+        audioPlayer.addEventListener('ended', () => {
+            if (audioPlayer.loop) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+            }
+        });
+
+        // Auto-play on any click (except audio controls)
+        document.addEventListener('click', (e) => {
+            // Don't auto-play if clicking on audio player controls
+            if (audioPlayerContainer.contains(e.target)) {
+                return;
+            }
+            
+            // Auto-play if not currently playing
+            if (!isPlaying) {
+                playAudio();
+            }
+        }, { once: false });
+    </script>
+</body>
+</html>
