@@ -1247,8 +1247,15 @@
             const secs = seconds % 60;
             
             const formatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')} đã trôi qua`;
-            document.getElementById('timer').textContent = formatted;
+            const timerElement = document.getElementById('timer');
+            if (timerElement) {
+                timerElement.textContent = formatted;
+            }
         }
+        
+        // Start timer immediately when page loads
+        updateTimer();
+        setInterval(updateTimer, 1000);
 
         // Loading overlay click handler
         const loadingOverlay = document.getElementById('loadingOverlay');
@@ -1285,10 +1292,7 @@
             loadingOverlay.classList.add('hidden');
             mainContainer.classList.add('visible');
             videoBackground.classList.add('visible');
-            // Don't reset startTime here - keep it from localStorage
-            // Update timer immediately and then every second
-            updateTimer();
-            setInterval(updateTimer, 1000);
+            // Timer is already running from page load, no need to restart
             
             // Ensure video plays after loading overlay is hidden
             playVideoOnInteraction();
