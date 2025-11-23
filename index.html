@@ -1226,8 +1226,18 @@
     </div>
 
     <script>
-        // Timer functionality
-        let startTime = Date.now();
+        // Timer functionality - persist across page reloads
+        const TIMER_STORAGE_KEY = 'website_start_time';
+        
+        // Get or set start time from localStorage
+        let startTime;
+        const savedStartTime = localStorage.getItem(TIMER_STORAGE_KEY);
+        if (savedStartTime) {
+            startTime = parseInt(savedStartTime);
+        } else {
+            startTime = Date.now();
+            localStorage.setItem(TIMER_STORAGE_KEY, startTime.toString());
+        }
         
         function updateTimer() {
             const elapsed = Date.now() - startTime;
@@ -1275,7 +1285,9 @@
             loadingOverlay.classList.add('hidden');
             mainContainer.classList.add('visible');
             videoBackground.classList.add('visible');
-            startTime = Date.now();
+            // Don't reset startTime here - keep it from localStorage
+            // Update timer immediately and then every second
+            updateTimer();
             setInterval(updateTimer, 1000);
             
             // Ensure video plays after loading overlay is hidden
