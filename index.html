@@ -1226,21 +1226,16 @@
     </div>
 
     <script>
-        // Timer functionality - persist across page reloads
-        const TIMER_STORAGE_KEY = 'website_start_time';
-        
-        // Get or set start time from localStorage
-        let startTime;
-        const savedStartTime = localStorage.getItem(TIMER_STORAGE_KEY);
-        if (savedStartTime) {
-            startTime = parseInt(savedStartTime);
-        } else {
-            startTime = Date.now();
-            localStorage.setItem(TIMER_STORAGE_KEY, startTime.toString());
-        }
+        // Timer functionality - synchronized across all devices
+        // This timestamp is the start time for the timer (same for all users)
+        // This ensures all devices show the same elapsed time
+        // Change this to your desired start time (in milliseconds since epoch)
+        // Current timestamp: 1732348800000 (adjust as needed)
+        const GLOBAL_START_TIME = 1732348800000; // Fixed start time - same for all users
         
         function updateTimer() {
-            const elapsed = Date.now() - startTime;
+            const currentTime = Date.now();
+            const elapsed = currentTime - GLOBAL_START_TIME;
             const seconds = Math.floor(elapsed / 1000);
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
